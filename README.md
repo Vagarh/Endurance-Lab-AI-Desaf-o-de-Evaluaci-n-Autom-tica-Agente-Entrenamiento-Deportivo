@@ -42,7 +42,7 @@ El chatbot responde preguntas sobre beneficios, políticas internas y roles de u
 ### 1. 🧱 Preparación del entorno
 
 ```bash
-git clone <repositorio>
+git clone https://github.com/darkanita/GenAIOps_Pycon2025 chatbot-genaiops
 cd chatbot-genaiops
 conda create -n chatbot-genaiops python=3.10 -y
 conda activate chatbot-genaiops
