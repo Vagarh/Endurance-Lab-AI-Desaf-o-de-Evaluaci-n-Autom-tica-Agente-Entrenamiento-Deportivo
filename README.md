@@ -125,7 +125,7 @@ Esto:
 Dashboard completo:
 
 ```bash
-streamlit run app/dashboard_all.py
+streamlit run app/dashboard.py
 ```
 
 - Tabla con todas las preguntas evaluadas
