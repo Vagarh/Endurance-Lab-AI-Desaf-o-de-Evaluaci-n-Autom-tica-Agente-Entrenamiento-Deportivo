@@ -8,7 +8,7 @@ def test_relevancia_minima():
     experiments = [e for e in client.search_experiments() if e.name.startswith("eval_")]
     
     assert experiments, "No hay experimentos con nombre 'eval_'"
-
+    
     for exp in experiments:
         runs = client.search_runs(experiment_ids=[exp.experiment_id])
         assert runs, f"No hay ejecuciones en el experimento {exp.name}"

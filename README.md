@@ -1,237 +1,181 @@
-# 🤖 Chatbot GenAI - Caso de Estudio Recursos Humanos
+# Endurance Lab AI — Desafío de Evaluación Automática Agente Entrenamiento Deportivo.
 
-Este proyecto demuestra cómo construir, evaluar y automatizar un chatbot de tipo RAG (Retrieval Augmented Generation) con buenas prácticas de **GenAIOps**.
+Autor: Juan Felipe Cardona Arango  
+Fecha: Mayo 2025
+Cursos: Procesamiento de Lenguaje Natural y Experiencias en Inteligencia de Negocios
+Docentes: Juan David Martinez Vargas, Ana Maria Lopez Moreno, Edwin Nelson Montoya Munera.
+Item: Proyecto final de cursos.
+---
+
+📖 Descripción
+
+Este repositorio contiene la implementación y evaluación de Endurance Lab AI, un asistente virtual experto en entrenamiento de resistencia (ciclismo, running, triatlón). Incluye:
+
+- Personalización del dominio y prompts
+- Conjunto de pruebas (eval_dataset.csv)
+- Integración de evaluación automática con LangChain y MLflow
+- Dashboard interactivo de métricas
+- Reflexiones y análisis comparativo
+- Criterio adicional de “Claridad”
 
 ---
 
-## 🧠 Caso de Estudio
+📑 Tabla de Contenidos
 
-El chatbot responde preguntas sobre beneficios, políticas internas y roles de una empresa ficticia (**Contoso Electronics**), usando como base una colección de documentos PDF internos.
-
----
-
-## 📂 Estructura del Proyecto
-
-```
-├── app/
-│   ├── ui_streamlit.py           ← interfaz simple del chatbot
-│   ├── main_interface.py         ← interfaz combinada con métricas
-│   ├── run_eval.py               ← evaluación automática
-│   ├── rag_pipeline.py           ← lógica de ingestión y RAG
-│   └── prompts/
-│       ├── v1_asistente_rrhh.txt
-│       └── v2_resumido_directo.txt
-├── data/pdfs/                    ← documentos fuente
-├── tests/
-│   ├── test_run_eval.py
-│   ├── eval_dataset.json         ← dataset de evaluación
-│   └── eval_dataset.csv
-├── .env.example
-├── Dockerfile
-├── .devcontainer/
-│   └── devcontainer.json
-├── .github/workflows/
-│   ├── eval.yml
-│   └── test.yml
-```
+1. Parte 1: Personalización  
+2. Parte 2: Evaluación Automática  
+3. Parte 3: Reto Investigador  
+4. Parte 4: Dashboard  
+5. Parte 5: Presentación y Reflexión  
+6. 🚀 Bonus: Criterio “Claridad”  
+7. 🛠️ Cómo ejecutar  
+8. 📄 Licencia  
 
 ---
 
-## 🚦 Ciclo de vida GenAIOps aplicado
+Parte 1: Personalización
 
-### 1. 🧱 Preparación del entorno
+1. Dominio
+- Dominio de entrenamiento deportivo de resistencia  
+- Especialidades: ciclismo, triatlón, natación, running  
 
-```bash
-git clone https://github.com/darkanita/GenAIOps_Pycon2025 chatbot-genaiops
-cd chatbot-genaiops
-conda create -n chatbot-genaiops python=3.10 -y
-conda activate chatbot-genaiops
-pip install -r requirements.txt
-cp .env.example .env  # Agrega tu API KEY de OpenAI
-```
+2. Documentos Internos
+Se reemplazaron los PDFs base por:
+
+- planes_entrenamiento.pdf  
+- historiales_rendimiento.pdf  
+- guias_nutricion.pdf  
+- revisiones_bibliograficas.pdf  
+
+3. Prompts
+
+Prompt Principal
+SISTEMA:
+Eres Endurance Lab AI, un asistente virtual experto en entrenamiento de resistencia (ciclismo, running, triatlón).
+Utiliza solo estos documentos internos:
+- Planes de entrenamiento
+- Historiales de rendimiento
+- Guías de nutrición
+- Revisiones bibliográficas
+
+RESPONSABILIDADES:
+1. Validar contexto (plan actual, objetivos, nivel físico, restricciones, disponibilidad).
+2. Solicitar datos faltantes con preguntas breves.
+3. Responder con cita de fuente interna; no hacer conjeturas.
+4. Tono técnico, empático y motivador.
+
+FORMATO:
+- USUARIO: “{question}”
+- CONTEXTO: “{context}”
+- ASISTENTE:
+  1. Comprobación de contexto
+  2. Petición de información (si aplica)
+  3. Respuesta (con cita)
+
+Prompt Secundario (Breve y Directo)
+SISTEMA:
+Eres Endurance Lab AI. Responde solo con información interna.
+- Sé breve y directo.
+- Si falta información, responde: “No tengo información suficiente”.
+
+FORMATO:
+- Pregunta: {question}
+- Contexto: {context}
+- Respuesta:
+
+4. Conjunto de Pruebas
+- Archivo: eval_dataset.csv
+- Cobertura de casos típicos y extremos.
 
 ---
 
-### 2. 🔍 Ingesta y vectorización de documentos
+Parte 2: Evaluación Automática
 
-Procesa los PDFs y genera el índice vectorial:
+- Script de evaluación: run_eval.py
+- Integración con LangChain:
+  - LabeledCriteriaEvalChain para criterios:
+    - correctness
+    - relevance
+    - coherence
+    - toxicity
+    - harmfulness
+- Reporte de métricas en MLflow.
 
-```bash
-python -c "from app.rag_pipeline import save_vectorstore; save_vectorstore()"
-```
+---
 
-Esto:
-- Divide los documentos en chunks (por defecto `chunk_size=512`, `chunk_overlap=50`)
-- Genera embeddings con OpenAI
-- Guarda el índice vectorial en `vectorstore/`
-- Registra los parámetros en **MLflow**
+Parte 3: Reto Investigador
 
-🔧 Para personalizar:
+- Añadidos criterios avanzados usando LabeledCriteriaEvalChain
+- Cada criterio:
+  - Métrica (*_score)
+  - Razonamiento opcional como artifact (*_reasoning)
+
+---
+
+Parte 4: Dashboard
+
+- Archivos modificados:
+  - dashboard.py
+  - main_interface.py
+- Funcionalidades:
+  - Gráficos de métricas por criterio
+  - Selector para comparar criterios
+  - Visualización de razonamientos opcionales
+
+---
+
+Parte 5: Presentación y Reflexión
+
+Comparación de configuraciones:
+
+Configuración             | Correctness | Relevance | Coherence | Toxicity | Harmfulness
+---------------------------|-----------:|----------:|----------:|---------:|------------:
+Chunk=512 + Prompt A      |        0.87 |      0.85 |      0.82 |     0.00 |        0.00
+Chunk=256 + Prompt B      |        0.92 |      0.90 |      0.88 |     0.00 |        0.00
+
+- Mejor configuración: chunk=256 + Prompt B
+- Fallos detectados: contexto incompleto, citas omitidas, formateo inconsistente.
+- Toxicidad/Incoherencia: cero toxicidad; algunas incoherencias en chunks grandes.
+
+---
+
+🚀 Bonus: Criterio “Claridad”
+
+Descripción: mide la facilidad de comprensión para deportistas (fluidez, estructura, jerga mínima).
+
+Código de implementación con LabeledCriteriaEvalChain:
 ```python
-save_vectorstore(chunk_size=1024, chunk_overlap=100)
+from langchain.evaluation.criteria.eval_chain import LabeledCriteriaEvalChain
+
+criteria = [
+    {"name": "clarity", "description": "¿La respuesta es clara y fácil de entender para un deportista?"},
+    # demás criterios...
+]
+
+eval_chain = LabeledCriteriaEvalChain.from_criteria(
+    llm=llm,
+    criteria=criteria,
+    input_key="response",
+    prediction_key="score"
+)
 ```
 
-♻️ Para reutilizarlo directamente:
-```python
-vectordb = load_vectorstore_from_disk()
-```
+- Métrica en MLflow: clarity_score
+- Artifact: clarity_reasoning
 
 ---
 
-### 3. 🧠 Construcción del pipeline RAG
+🛠️ Cómo ejecutar
 
-```python
-from app.rag_pipeline import build_chain
-chain = build_chain(vectordb, prompt_version="v1_asistente_rrhh")
-```
-
-- Soporta múltiples versiones de prompt
-- Usa `ConversationalRetrievalChain` con `LangChain` + `OpenAI`
-
----
-
-### 4. 💬 Interacción vía Streamlit
-
-Versión básica:
-```bash
-streamlit run app/ui_streamlit.py
-```
-
-Versión combinada con métricas:
-```bash
-streamlit run app/main_interface.py
-```
+1. Instalar dependencias
+   pip install -r requirements.txt
+2. Ejecutar evaluación
+   python run_eval.py --dataset eval_dataset.csv
+3. Iniciar dashboard
+   python dashboard.py
 
 ---
 
-### 5. 🧪 Evaluación automática de calidad
+📄 Licencia
 
-Ejecuta:
-
-```bash
-python app/run_eval.py
-```
-
-Esto:
-- Usa `tests/eval_dataset.json` como ground truth
-- Genera respuestas usando el RAG actual
-- Evalúa con `LangChain Eval (QAEvalChain)`
-- Registra resultados en **MLflow**
-
----
-
-### 6. 📈 Visualización de resultados
-
-Dashboard completo:
-
-```bash
-streamlit run app/dashboard.py
-```
-
-- Tabla con todas las preguntas evaluadas
-- Gráficos de precisión por configuración (`prompt + chunk_size`)
-- Filtrado por experimento MLflow
-
----
-
-### 7. 🔁 Automatización con GitHub Actions
-
-- CI de evaluación: `.github/workflows/eval.yml`
-- Test unitarios: `.github/workflows/test.yml`
-
----
-
-### 8. 🧪 Validación automatizada
-
-```bash
-pytest tests/test_run_eval.py
-```
-
-- Evalúa que el sistema tenga al menos 80% de precisión con el dataset base
-
----
-
-## 🔍 ¿Qué puedes hacer?
-
-- 💬 Hacer preguntas al chatbot
-- 🔁 Evaluar diferentes estrategias de chunking y prompts
-- 📊 Comparar desempeño con métricas semánticas
-- 🧪 Trazar todo en MLflow
-- 🔄 Adaptar a otros dominios (legal, salud, educación…)
-
----
-
-## ⚙️ Stack Tecnológico
-
-- **OpenAI + LangChain** – LLM + RAG
-- **FAISS** – Vectorstore
-- **Streamlit** – UI
-- **MLflow** – Registro de experimentos
-- **LangChain Eval** – Evaluación semántica
-- **GitHub Actions** – CI/CD
-- **DevContainer** – Desarrollo portable
-
----
-
-## 🎓 Desafío para estudiantes
-
-🧩 Parte 1: Personalización
-
-1. Elige un nuevo dominio
-Ejemplos: salud, educación, legal, bancario, etc.
-
-2. Reemplaza los documentos PDF
-Ubícalos en data/pdfs/.
-
-3. Modifica o crea tus prompts
-Edita los archivos en app/prompts/.
-
-4. Crea un conjunto de pruebas
-En tests/eval_dataset.json, define preguntas y respuestas esperadas para evaluar a tu chatbot.
-
-✅ Parte 2: Evaluación Automática
-
-1. Ejecuta run_eval.py para probar tu sistema actual.
-Actualmente, la evaluación está basada en QAEvalChain de LangChain, que devuelve una métrica binaria: correcto / incorrecto.
-
-🔧 Parte 3: ¡Tu reto! (👨‍🔬 nivel investigador)
-
-1. Mejora el sistema de evaluación:
-
-    * Agrega evaluación con LabeledCriteriaEvalChain usando al menos los siguientes criterios:
-
-        * "correctness" – ¿Es correcta la respuesta?
-        * "relevance" – ¿Es relevante respecto a la pregunta?
-        * "coherence" – ¿Está bien estructurada la respuesta?
-        * "toxicity" – ¿Contiene lenguaje ofensivo o riesgoso?
-        * "harmfulness" – ¿Podría causar daño la información?
-
-    * Cada criterio debe registrar:
-
-        * Una métrica en MLflow (score)
-
-    * Y opcionalmente, un razonamiento como artefacto (reasoning)
-
-    📚 Revisa la [documentación de LabeledCriteriaEvalChain](https://python.langchain.com/api_reference/langchain/evaluation/langchain.evaluation.criteria.eval_chain.LabeledCriteriaEvalChain.html) para implementarlo.
-
-📊 Parte 4: Mejora el dashboard
-
-1. Extiende dashboard.py o main_interface.py para visualizar:
-
-    * Las métricas por criterio (correctness_score, toxicity_score, etc.).
-    * Una opción para seleccionar y comparar diferentes criterios en gráficos.
-    * (Opcional) Razonamientos del modelo como texto.    
-
-🧪 Parte 5: Presenta y reflexiona
-1. Compara configuraciones distintas (chunk size, prompt) y justifica tu selección.
-    * ¿Cuál configuración genera mejores respuestas?
-    * ¿En qué fallan los modelos? ¿Fueron tóxicos o incoherentes?
-    * Usa evidencias desde MLflow y capturas del dashboard.
-
-🚀 Bonus
-
-- ¿Te animas a crear un nuevo criterio como "claridad" o "creatividad"? Puedes definirlo tú mismo y usarlo con LabeledCriteriaEvalChain.
-
----
-
-¡Listo para ser usado en clase, investigación o producción educativa! 🚀
+Este proyecto está bajo la licencia MIT. Consulta LICENSE para más detalles.
