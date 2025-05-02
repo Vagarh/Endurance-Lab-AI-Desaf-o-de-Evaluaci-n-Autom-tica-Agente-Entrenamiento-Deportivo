@@ -7,6 +7,8 @@ Docentes: Juan David Martinez Vargas, Ana Maria Lopez Moreno, Edwin Nelson Monto
 Item: Proyecto final de cursos.
 ---
 
+
+
 📖 Descripción
 
 Este repositorio contiene la implementación y evaluación de Endurance Lab AI, un asistente virtual experto en entrenamiento de resistencia (ciclismo, running, triatlón). Incluye:
