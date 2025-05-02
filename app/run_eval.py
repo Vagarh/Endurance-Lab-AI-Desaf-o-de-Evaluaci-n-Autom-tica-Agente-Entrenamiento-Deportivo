@@ -1,36 +1,47 @@
 # eval/run_evaluation.py
-import sys, os, json
+# ──────────────────────────────────────────────────────────────
+# Evaluación automática de un asistente RAG con métricas continuas 0‑1
+# (Cambios mínimos sobre tu versión original)
+# ──────────────────────────────────────────────────────────────
+import os
+import sys
+import json
 from typing import Dict, Any
 
-# ──────────────────────────────────────────────────────────────
 # Rutas internas
-# ──────────────────────────────────────────────────────────────
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Carga de variables de entorno
 from dotenv import load_dotenv
+load_dotenv()
+
+# Componentes propios
 from app.rag_pipeline import load_vectorstore_from_disk, build_chain  # noqa: E402
 
 # LangChain & OpenAI
 from langchain_openai import ChatOpenAI
+from langchain.evaluation import load_evaluator
 from langchain.evaluation.qa import QAEvalChain
-from langchain.evaluation.criteria import CriteriaEvalChain
 
 # MLflow
 import mlflow
 
+
 # ──────────────────────────────────────────────────────────────
-# Configuración
+# Parámetros de configuración
 # ──────────────────────────────────────────────────────────────
-load_dotenv()
-PROMPT_VERSION = os.getenv("PROMPT_VERSION", "v1_asistente_rrhh")
+PROMPT_VERSION = os.getenv("PROMPT_VERSION", "v1_asistente_deporte")
 CHUNK_SIZE     = int(os.getenv("CHUNK_SIZE", 512))
 CHUNK_OVERLAP  = int(os.getenv("CHUNK_OVERLAP", 50))
 DATASET_PATH   = os.getenv("DATASET_PATH", "tests/eval_dataset.json")
 
+
 # ──────────────────────────────────────────────────────────────
-# Carga de dataset
+# Dataset de evaluación
 # ──────────────────────────────────────────────────────────────
 with open(DATASET_PATH, encoding="utf-8") as f:
     dataset = json.load(f)
+
 
 # ──────────────────────────────────────────────────────────────
 # Construcción del pipeline RAG
@@ -38,13 +49,17 @@ with open(DATASET_PATH, encoding="utf-8") as f:
 vectordb = load_vectorstore_from_disk()
 chain    = build_chain(vectordb, prompt_version=PROMPT_VERSION)
 
+
 # ──────────────────────────────────────────────────────────────
-# Inicialización de LLM y evaluadores base
+# Inicialización del LLM  (mantiene tu estilo original)
 # ──────────────────────────────────────────────────────────────
-llm     = ChatOpenAI(model_name="gpt-4", temperature=0)
+llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
+
+# Evaluador QA (correcto/incorrecto, sigue binario)
 qa_eval = QAEvalChain.from_llm(llm)
 
-# Definimos los criterios con su descripción
+
+# Criterios y descripciones
 criteria: Dict[str, str] = {
     "correctness": "¿La respuesta es objetivamente correcta y factual?",
     "relevance":   "¿La respuesta aborda la pregunta de forma pertinente?",
@@ -53,86 +68,86 @@ criteria: Dict[str, str] = {
     "harmfulness": "¿Podría causar daño si se sigue o se toma como cierta?",
 }
 
-# ──────────────────────────────────────────────────────────────
-# Función utilitaria de conversión a float
-# ──────────────────────────────────────────────────────────────
-def to_float(val: Any) -> float:
-    if val is None:
-        return 0.0
-    if isinstance(val, (int, float)):
-        return float(val)
-    s = str(val).strip().lower()
-    if s in {"yes", "y", "true", "positivo"}:
-        return 1.0
-    if s in {"no", "n", "false", "negativo"}:
-        return 0.0
-    try:
-        return float(s)
-    except ValueError:
-        return 0.0
 
 # ──────────────────────────────────────────────────────────────
-# Configurar experimento MLflow
+# Evaluadores continuos 1‑10  (sin normalize_by)
+# ──────────────────────────────────────────────────────────────
+scorers = {
+    name: load_evaluator(
+        "labeled_score_string",          # escala de 1 a 10
+        criteria={name: desc},
+        llm=llm
+    )
+    for name, desc in criteria.items()
+}
+
+
+# ──────────────────────────────────────────────────────────────
+# Utilidad de conversión a float
+# ──────────────────────────────────────────────────────────────
+def to_float(val: Any) -> float:
+    try:
+        return float(val)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+# ──────────────────────────────────────────────────────────────
+# MLflow
 # ──────────────────────────────────────────────────────────────
 mlflow.set_experiment(f"eval_{PROMPT_VERSION}")
 print(f"📊 Experimento MLflow: eval_{PROMPT_VERSION}")
 
-# ──────────────────────────────────────────────────────────────
-# Evaluación por lote
-# ──────────────────────────────────────────────────────────────
-for i, pair in enumerate(dataset, start=1):
-    pregunta           = pair["question"]
-    respuesta_esperada = pair.get("answer", "")
 
-    with mlflow.start_run(run_name=f"eval_q{i}"):
-        # 1) Generar respuesta del asistente
-        result = chain.invoke({"question": pregunta, "chat_history": []})
-        respuesta_generada = result["answer"]
+# ──────────────────────────────────────────────────────────────
+# Bucle de evaluación
+# ──────────────────────────────────────────────────────────────
+for idx, pair in enumerate(dataset, start=1):
+    question        = pair["question"]
+    expected_answer = pair.get("answer", "")
 
-        # 2) Evaluación QA (correcto/incorrecto)
+    with mlflow.start_run(run_name=f"eval_q{idx}"):
+        # 1) Respuesta generada
+        result = chain.invoke({"question": question, "chat_history": []})
+        answer = result["answer"]
+
+        # 2) QA binario
         qa_graded = qa_eval.evaluate_strings(
-            input=pregunta,
-            prediction=respuesta_generada,
-            reference=respuesta_esperada,
+            input=question,
+            prediction=answer,
+            reference=expected_answer,
         )
-        qa_score   = qa_graded.get("score", 0)
+        qa_score   = to_float(qa_graded.get("score", 0))
         qa_verdict = qa_graded.get("value", "UNKNOWN")
 
-        # 3) Evaluación por cada criterio
+        # 3) Criterios continuos (normalizamos dividiendo por 10 → 0‑1)
         crit_scores: Dict[str, float] = {}
         crit_values: Dict[str, str]   = {}
 
-        for crit_name, crit_desc in criteria.items():
-            # Creamos un evaluador específico para este criterio
-            crit_chain = CriteriaEvalChain.from_llm(
-                llm=llm,
-                criteria={crit_name: crit_desc},
+        for crit_name, scorer in scorers.items():
+            graded = scorer.evaluate_strings(
+                input=question,
+                prediction=answer,
+                reference=expected_answer,
             )
-            # Obtenemos la evaluación
-            graded = crit_chain.evaluate_strings(
-                input=pregunta,
-                prediction=respuesta_generada,
-                reference=respuesta_esperada,
-            )
-            value = graded.get("value") or graded.get("score")
-            score = graded.get("score", 0)
+            raw_score = to_float(graded.get("score", 0))  # 1‑10
+            score     = raw_score / 10.0                  # 0‑1
+            crit_scores[crit_name] = score
+            crit_values[crit_name] = str(graded.get("value", ""))
 
-            crit_values[crit_name] = str(value)
-            crit_scores[crit_name] = to_float(score)
+            mlflow.log_metric(f"{crit_name}_score", score)
 
-        # 4) Loggeamos a MLflow
-        mlflow.log_param("question",       pregunta)
+        # 4) Parametría QA
+        mlflow.log_param("question",       question)
         mlflow.log_param("prompt_version", PROMPT_VERSION)
         mlflow.log_param("chunk_size",     CHUNK_SIZE)
         mlflow.log_param("chunk_overlap",  CHUNK_OVERLAP)
-        mlflow.log_metric("lc_is_correct", qa_score)
+        mlflow.log_metric("qa_score", qa_score)
 
+        # 5) Consola
+        print(f"\n📝 Pregunta {idx}/{len(dataset)} — QA: {qa_verdict} (score={qa_score})")
         for crit in criteria:
-            mlflow.log_metric(f"{crit}_score", crit_scores[crit])
+            print(f"· {crit:<12}: {crit_values[crit]}  (score={crit_scores[crit]:.2f})")
 
-        # 5) Imprimimos el resumen
-        print(f"\n📝 Pregunta {i}/{len(dataset)} — QA: {qa_verdict} (score={qa_score})")
-        for crit in criteria:
-            print(f"· {crit:<12}: {crit_values[crit]}  (score={crit_scores[crit]})")
 
 print("\n✅ Evaluación completada; métricas guardadas en MLflow")
