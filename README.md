@@ -1,132 +1,143 @@
-Endurance Lab AI 🏆
-Asistente virtual para entrenamiento de resistencia — ciclismo · running · triatlón
+═══════════════════════════════════════════════════════
+🏆  ENDURANCE LAB AI — Asistente Virtual Deportivo
+═══════════════════════════════════════════════════════
 
-Autor: Juan Felipe Cardona Arango
-Fecha: Mayo 2025
-Cursos: Procesamiento de Lenguaje Natural y Experiencias en Inteligencia de Negocios
-Docentes: Juan David Martínez Vargas · Ana María López Moreno · Edwin Nelson Montoya Múnera
-Ítem: Proyecto final de ambos cursos
+💡 Asistente especializado en entrenamiento de resistencia:  
+   ciclismo · running · triatlón · natación
 
-------------------------------------------------------------
+📌 Proyecto Final de los cursos:
+   • Procesamiento de Lenguaje Natural  
+   • Experiencias en Inteligencia de Negocios  
 
-📖 Descripción
+👤 Autor: Juan Felipe Cardona Arango  
+📅 Fecha: Mayo 2025  
+👨‍🏫 Docentes:  
+   • Juan David Martínez Vargas  
+   • Ana María López Moreno  
+   • Edwin Nelson Montoya Múnera  
 
-Este repositorio contiene la implementación y evaluación de Endurance Lab AI, un asistente virtual experto en entrenamiento de resistencia. Incluye:
+-------------------------------------------------------
+📖 DESCRIPCIÓN GENERAL
+-------------------------------------------------------
 
-- Personalización del dominio y los prompts
-- Conjunto de pruebas "eval_dataset.csv"
-- Evaluación automática con LangChain y MLflow
-- Dashboard interactivo de métricas
-- Reflexiones y análisis comparativo
-- Criterio adicional de Claridad
+Este repositorio contiene el desarrollo completo del asistente **Endurance Lab AI**:
+✔ Personalización del dominio y prompts  
+✔ Evaluación automática con LangChain + MLflow  
+✔ Dataset de pruebas y análisis  
+✔ Dashboard interactivo  
+✔ Reflexiones finales y criterio de claridad para usuarios deportistas
 
-------------------------------------------------------------
+-------------------------------------------------------
+🗂️ ESTRUCTURA DEL CONTENIDO
+-------------------------------------------------------
 
-🗂️ Tabla de Contenidos
+1. ▶ Parte 1: Personalización
+2. ▶ Parte 2: Evaluación Automática
+3. ▶ Parte 3: Reto Investigador
+4. ▶ Parte 4: Dashboard de Métricas
+5. ▶ Parte 5: Presentación y Reflexión
+6. ▶ BONUS: Evaluación de Claridad
+7. ▶ Cómo Ejecutar el Proyecto
+8. ▶ Licencia
 
-1. Parte 1: Personalización
-2. Parte 2: Evaluación Automática
-3. Parte 3: Reto Investigador
-4. Parte 4: Dashboard
-5. Parte 5: Presentación y Reflexión
-6. Bonus: Claridad
-7. Cómo Ejecutar
-8. Licencia
+-------------------------------------------------------
+📁 PARTE 1: PERSONALIZACIÓN
+-------------------------------------------------------
 
-------------------------------------------------------------
+🔹 Dominio Temático:
+   • Entrenamiento deportivo de resistencia
+   • Foco en ciclismo, triatlón, natación y running
 
-Parte 1: Personalización
+🔹 Documentos Internos Sustituidos:
+   • planes_entrenamiento.pdf
+   • historiales_rendimiento.pdf
+   • guias_nutricion.pdf
+   • revisiones_bibliograficas.pdf
 
-1. Dominio
-Asistente especializado en entrenamiento de resistencia: ciclismo, triatlón, natación y running.
+🔹 Prompts:
+   ▫ Principal → Respuestas completas, con validación de contexto y cita textual
+   ▫ Secundario → Respuestas breves y directas, solo si hay contexto suficiente
 
-2. Documentos internos utilizados:
-- planes_entrenamiento.pdf
-- historiales_rendimiento.pdf
-- guias_nutricion.pdf
-- revisiones_bibliograficas.pdf
+🔹 Dataset de Pruebas:
+   • Archivo: eval_dataset.csv  
+   • Incluye casos reales y extremos
 
-3. Prompts utilizados:
+-------------------------------------------------------
+🤖 PARTE 2: EVALUACIÓN AUTOMÁTICA
+-------------------------------------------------------
 
-Prompt principal:
-- SISTEMA: Eres Endurance Lab AI, un asistente virtual experto...
-- RESPONSABILIDADES: Validar contexto, solicitar datos faltantes, responder con citas.
-- FORMATO: USUARIO {question}, CONTEXTO {context}, ASISTENTE ...
+⚙ Script principal: run_eval.py  
+🧠 Framework: LangChain  
+📊 Seguimiento: MLflow
 
-Prompt secundario:
-- SISTEMA: Responde solo con información interna. Sé breve y directo.
+Criterios evaluados automáticamente:
+• Correctness  
+• Relevance  
+• Coherence  
+• Toxicity  
+• Harmfulness
 
-4. Conjunto de pruebas:
-- Archivo: eval_dataset.csv
-- Casos típicos y extremos
+-------------------------------------------------------
+🔬 PARTE 3: RETO INVESTIGADOR
+-------------------------------------------------------
 
-------------------------------------------------------------
+Se añadieron criterios avanzados personalizados:
+• *_score → Métrica numérica  
+• *_reasoning → Explicación textual
 
-Parte 2: Evaluación Automática
+-------------------------------------------------------
+📊 PARTE 4: DASHBOARD DE MÉTRICAS
+-------------------------------------------------------
 
-- Script: run_eval.py
-- Evaluador: LangChain (correctness, relevance, coherence, toxicity, harmfulness)
-- Registro: MLflow
+🗂 Archivos clave:
+   • dashboard.py → Gráficas por criterio  
+   • app/main_interface.py → Interfaz visual y filtros
 
-------------------------------------------------------------
+-------------------------------------------------------
+📈 PARTE 5: PRESENTACIÓN Y REFLEXIÓN
+-------------------------------------------------------
 
-Parte 3: Reto Investigador
+Evaluación comparativa:
 
-Se agregaron métricas avanzadas:
-- *_score: valor numérico
-- *_reasoning: justificación textual
+ Configuración            | Correct | Relevant | Coherent | Toxic | Harmful
+ -------------------------|---------|----------|----------|-------|---------
+ Chunk = 512 · Prompt A   |  0.87   |   0.85   |   0.82   | 0.00  |  0.00
+ Chunk = 256 · Prompt B   |  0.92   |   0.90   |   0.88   | 0.00  |  0.00
 
-------------------------------------------------------------
+✅ Mejor combinación: Chunk 256 + Prompt B  
+⚠️ Hallazgos: Incoherencia leve y formato inconsistente en chunks largos
 
-Parte 4: Dashboard
+-------------------------------------------------------
+✨ BONUS: CRITERIO DE CLARIDAD
+-------------------------------------------------------
 
-- dashboard.py: visualización por criterio
-- app/main_interface.py: selector de experimentos y gráficos interactivos
+Evalúa si la respuesta es comprensible para un deportista (fluidez, jerga, estructura).  
+Resultados guardados como:  
+• clarity_score (valor numérico)  
+• clarity_reasoning (explicación registrada en MLflow)
 
-------------------------------------------------------------
+-------------------------------------------------------
+🛠️ CÓMO EJECUTAR EL PROYECTO
+-------------------------------------------------------
 
-Parte 5: Presentación y Reflexión
-
-Resultados por configuración:
-
-| Chunk Size | Prompt  | Correctness | Relevance | Coherence | Toxicity | Harmfulness |
-|------------|---------|-------------|-----------|-----------|----------|-------------|
-| 512        | A       | 0.87        | 0.85      | 0.82      | 0.00     | 0.00        |
-| 256        | B       | 0.92        | 0.90      | 0.88      | 0.00     | 0.00        |
-
-Observaciones:
-- Mejor configuración: Chunk 256 + Prompt B
-- Fallos detectados: contexto incompleto, formato inconsistente, citas ausentes
-
-------------------------------------------------------------
-
-Bonus: Claridad
-
-Evaluación de la claridad para usuarios deportistas (fluidez, jerga, estructura)
-
-Código base (LangChain):
-- clarity_score: puntuación
-- clarity_reasoning: justificación
-
-------------------------------------------------------------
-
-🛠 Cómo Ejecutar
-
-1. Instalar dependencias:
+1️⃣ Instalar dependencias:
    pip install -r requirements.txt
 
-2. Ejecutar evaluación:
+2️⃣ Ejecutar la evaluación automática:
    python run_eval.py --dataset eval_dataset.csv
 
-3. Lanzar aplicación Streamlit:
+3️⃣ Lanzar la aplicación Streamlit:
    streamlit run app/main_interface.py
 
-Accede desde tu navegador en http://localhost:8501
+🌐 Luego, accede en tu navegador a:
+   http://localhost:8501
 
-------------------------------------------------------------
+-------------------------------------------------------
+📄 LICENCIA
+-------------------------------------------------------
 
-📄 Licencia
+Este proyecto está licenciado bajo los términos de la Licencia MIT.  
+Revisa el archivo LICENSE para más información.
 
-Este proyecto está licenciado bajo los términos de la Licencia MIT.
-Consulta el archivo LICENSE para más detalles.
+═══════════════════════════════════════════════════════
 
