@@ -28,6 +28,12 @@ Este repositorio contiene el desarrollo completo del asistente **Endurance Lab A
 ✔ Reflexiones finales y criterio de claridad para usuarios deportistas
 
 -------------------------------------------------------
+⚙️ REQUISITOS BÁSICOS
+-------------------------------------------------------
+- Python 3.10 o superior
+- Copia `.env.example` a `.env` y agrega tu `OPENAI_API_KEY`
+
+-------------------------------------------------------
 🗂️ ESTRUCTURA DEL CONTENIDO
 -------------------------------------------------------
 
@@ -122,11 +128,12 @@ Resultados guardados como:
 
 1️⃣ Instalar dependencias:
    pip install -r requirements.txt
+2️⃣ Copiar `.env.example` a `.env` y definir tu clave de API
 
-2️⃣ Ejecutar la evaluación automática:
+3️⃣ Ejecutar la evaluación automática:
    python run_eval.py --dataset eval_dataset.csv
 
-3️⃣ Lanzar la aplicación Streamlit:
+4️⃣ Lanzar la aplicación Streamlit:
    streamlit run app/main_interface.py
 
 🌐 Luego, accede en tu navegador a:
