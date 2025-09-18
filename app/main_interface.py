@@ -28,12 +28,23 @@ sys.path.append(str(APP_ROOT))  # para importar app.*
 from app.rag_pipeline import load_vectorstore_from_disk, build_chain  # noqa: E402
 
 # ───────────────────────────
-#  Constantes de branding
+#  Configuración del proyecto
 # ───────────────────────────
-REPO_URL      = "https://github.com/Vagarh/Endurance-Lab-AI-Desaf-o-de-Evaluaci-n-Autom-tica-Agente-Entrenamiento-Deportivo"
-LOGO_URL      = "/Users/juanfelipearango/Desktop/chatbot-genaiops/Imagenes/ChatGPT Image 2 may 2025, 17_42_01.png"  # ajusta si cambias la ruta
-HERO_URL      = "/Users/juanfelipearango/Desktop/chatbot-genaiops/Imagenes/ChatGPT Image 2 may 2025, 17_45_41.png"
-APP_VERSION   = "1.0.0"
+try:
+    from config import (
+        PROJECT_NAME, PROJECT_VERSION, REPO_URL, 
+        LOGO_PATH, HERO_PATH, SUPPORTED_SPORTS
+    )
+    LOGO_URL = str(LOGO_PATH) if LOGO_PATH.exists() else None
+    HERO_URL = str(HERO_PATH) if HERO_PATH.exists() else None
+    APP_VERSION = PROJECT_VERSION
+except ImportError:
+    # Fallback si no existe config.py
+    REPO_URL = "https://github.com/Vagarh/Endurance-Lab-AI-Desaf-o-de-Evaluaci-n-Autom-tica-Agente-Entrenamiento-Deportivo"
+    LOGO_URL = None
+    HERO_URL = None
+    APP_VERSION = "1.0.0"
+    SUPPORTED_SPORTS = ["Ciclismo", "Running", "Triatlón", "Natación", "Otro"]
 
 # ───────────────────────────
 #  Configuración general

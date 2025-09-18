@@ -66,8 +66,12 @@ def load_vectorstore_from_disk(persist_path=VECTOR_DIR):
 def load_prompt(version="v1_asistente_rrhh"):
     prompt_path = os.path.join(PROMPT_DIR, f"{version}.txt")
     if not os.path.exists(prompt_path):
-        raise FileNotFoundError(f"Prompt no encontrado: {prompt_path}")
-    with open(prompt_path, "r") as f:
+        # Fallback al prompt por defecto si no existe el especificado
+        prompt_path = os.path.join(PROMPT_DIR, "v1_asistente_rrhh.txt")
+        if not os.path.exists(prompt_path):
+            raise FileNotFoundError(f"Prompt no encontrado: {prompt_path}")
+    
+    with open(prompt_path, "r", encoding="utf-8") as f:
         prompt_text = f.read()
     return PromptTemplate(input_variables=["context", "question"], template=prompt_text)
 
