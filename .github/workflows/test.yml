@@ -25,6 +25,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Verificar setup del proyecto
+      run: |
+        python scripts/verify_setup.py
+
     - name: Ejecutar pytest
       run: |
-        pytest tests/test_run_eval.py
+        pytest tests/test_run_eval.py -v

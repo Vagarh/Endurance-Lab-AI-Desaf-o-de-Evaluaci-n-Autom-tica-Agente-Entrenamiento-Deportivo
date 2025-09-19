@@ -26,8 +26,29 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Verificar setup del proyecto
+      run: |
+        python scripts/verify_setup.py
+
+    - name: Verificar API Key
+      id: check-api-key
+      run: |
+        if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+          echo "api_key_exists=false" >> $GITHUB_OUTPUT
+          echo "⚠️ OPENAI_API_KEY no configurada. Saltando evaluación."
+        else
+          echo "api_key_exists=true" >> $GITHUB_OUTPUT
+          echo "✅ OPENAI_API_KEY configurada. Ejecutando evaluación."
+        fi
+
     - name: Ejecutar evaluación
+      if: steps.check-api-key.outputs.api_key_exists == 'true'
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
         python app/run_eval.py
+
+    - name: Saltar evaluación
+      if: steps.check-api-key.outputs.api_key_exists == 'false'
+      run: |
+        echo "🔄 Evaluación saltada - configura OPENAI_API_KEY en GitHub Secrets para ejecutar evaluaciones completas"
