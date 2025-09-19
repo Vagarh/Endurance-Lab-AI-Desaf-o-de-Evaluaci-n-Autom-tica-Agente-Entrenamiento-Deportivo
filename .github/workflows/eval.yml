@@ -30,7 +30,14 @@ jobs:
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
-        python scripts/build_vectorstore.py
+        if python scripts/build_vectorstore.py; then
+          echo "✅ Vectorstore generado exitosamente"
+        else
+          echo "❌ Error generando vectorstore - verifica tu OPENAI_API_KEY en GitHub Secrets"
+          echo "💡 Ve a Settings → Secrets and variables → Actions"
+          echo "💡 Asegúrate de que OPENAI_API_KEY esté configurada correctamente"
+          exit 1
+        fi
 
     - name: Verificar setup del proyecto
       run: |
