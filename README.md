@@ -16,6 +16,10 @@
    • Ana María López Moreno  
    • Edwin Nelson Montoya Múnera  
 
+
+URL DEL PROYECTO -> https://gwzq2khrmuwgkzbhavrmpb.streamlit.app/
+
+
 -------------------------------------------------------
 📖 DESCRIPCIÓN GENERAL
 -------------------------------------------------------
