@@ -26,6 +26,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Generar vectorstore
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: |
+        python scripts/build_vectorstore.py
+
     - name: Verificar setup del proyecto
       run: |
         python scripts/verify_setup.py
