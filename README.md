@@ -353,4 +353,5 @@ Ver [LICENSE](LICENSE) para más información.
 
 **🚀 ¡Comienza a usar Endurance Lab AI ahora!**
 
-═══════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════#   T e s t   t r i g g e r  
+ 
