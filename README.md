@@ -185,11 +185,18 @@ docker-compose logs -f
 # Ejecutar evaluación automática
 python app/run_eval.py
 
+# Dashboard de métricas avanzado
+python run_metrics_dashboard.py
+# O en Windows: run_metrics_dashboard.bat
+
 # Configuración inicial completa
 python setup_project.py
 
 # Verificar configuración
 python -c "from config import validate_config; print(validate_config())"
+
+# Verificar estado del sistema
+python health_check.py
 ```
 
 🌐 **Acceso:** 
@@ -244,5 +251,70 @@ Revisa el archivo LICENSE para más información.
 - Preparado para cloud deployment
 
 **📖 Ver `DEPLOYMENT.md` para guía completa de despliegue**
+
+-------------------------------------------------------
+------
+-------------------------------------------------
+📊 DASHBOARD DE MÉTRICAS AVANZADO
+-------------------------------------------------------
+
+### 🎯 **Nuevo Dashboard Interactivo**
+
+Hemos agregado un dashboard completo de métricas con:
+
+✅ **Visualizaciones Avanzadas**
+- Gráficos radar de rendimiento vs objetivos
+- Evolución temporal de métricas
+- Análisis por configuración
+- Tablas detalladas interactivas
+
+✅ **Métricas Evaluadas**
+- **Correctness**: Precisión factual de respuestas
+- **Relevance**: Pertinencia de la respuesta
+- **Coherence**: Claridad y estructura
+- **Safety**: Ausencia de toxicidad y daño
+
+✅ **Funcionalidades**
+- Ejecución de evaluaciones desde la interfaz
+- Recomendaciones automáticas de mejora
+- Comparación entre diferentes configuraciones
+- Exportación de resultados
+
+### 🚀 **Cómo Acceder al Dashboard**
+
+**Opción 1: Script Dedicado**
+```bash
+# Windows
+run_metrics_dashboard.bat
+
+# Linux/Mac
+python run_metrics_dashboard.py
+```
+
+**Opción 2: Desde la Interfaz Principal**
+1. Ejecuta la aplicación principal
+2. Selecciona "📊 Dashboard de Métricas" en el sidebar
+3. Haz clic en "Abrir Dashboard Completo"
+
+**Opción 3: Comando Directo**
+```bash
+streamlit run app/metrics_dashboard.py --server.port=8502
+```
+
+🌐 **Acceso**: http://localhost:8502
+
+### 📈 **Interpretación de Resultados**
+
+**🟢 Excelente (80-100%)**
+- Sistema listo para producción
+- Respuestas precisas y confiables
+
+**🟡 Bueno (60-79%)**
+- Funciona bien, margen de mejora
+- Revisar prompts y datos
+
+**🔴 Necesita Mejora (<60%)**
+- Requiere optimización
+- Revisar configuración completa
 
 -------------------------------------------------------

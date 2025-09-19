@@ -369,9 +369,9 @@ with st.sidebar:
     st.markdown("### 🧭 Navegación")
     modo = st.radio(
         "Selecciona el modo:",
-        ["🤖 Asistente Inteligente", "📊 Analytics & Métricas"],
+        ["🤖 Asistente Inteligente", "📊 Dashboard de Métricas", "📈 Analytics Básicos"],
         index=0,
-        help="Elige entre chatbot o visualización de métricas"
+        help="Elige entre chatbot, dashboard avanzado o métricas básicas"
     )
 
     if modo == "🤖 Asistente Inteligente":
@@ -439,10 +439,18 @@ with st.sidebar:
         tip_del_dia = tips[datetime.now().day % len(tips)]
         st.info(f"**Tip del día:** {tip_del_dia}")
         
-    else:
+    elif modo == "📊 Dashboard de Métricas":
         st.markdown("---")
-        st.markdown("### 📊 Configuración de Métricas")
-        st.info("Visualiza el rendimiento del sistema de IA y métricas de evaluación automática.")
+        st.markdown("### 📊 Dashboard Avanzado")
+        st.info("Dashboard interactivo con gráficos avanzados y análisis detallado.")
+        
+        if st.button("🚀 Ejecutar Nueva Evaluación", type="primary"):
+            st.info("Ejecutando evaluación en segundo plano...")
+    
+    else:  # Analytics Básicos
+        st.markdown("---")
+        st.markdown("### 📈 Analytics Básicos")
+        st.info("Visualización básica del rendimiento del sistema de IA.")
         
     st.markdown("---")
     
@@ -658,7 +666,90 @@ if modo == "🤖 Asistente Inteligente":
 # ═══════════════════════════════════════════════════════════════════════════════
 #                                  MÉTRICAS
 # ═══════════════════════════════════════════════════════════════════════════════
-else:  # modo == "📊 Analytics & Métricas"
+elif modo == "📊 Dashboard de Métricas":
+    # Importar y ejecutar el dashboard avanzado
+    try:
+        import subprocess
+        import sys
+        
+        st.markdown("""
+        <div style="text-align: center; padding: 2rem;">
+            <h2 style="color: #667eea;">🚀 Cargando Dashboard Avanzado...</h2>
+            <p>Redirigiendo al dashboard completo de métricas</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Botón para abrir dashboard en nueva pestaña
+        st.markdown("""
+        <div style="text-align: center; margin: 2rem 0;">
+            <a href="http://localhost:8502" target="_blank" style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 25px;
+                text-decoration: none;
+                font-weight: bold;
+                display: inline-block;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            ">📊 Abrir Dashboard Completo</a>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Información sobre cómo ejecutar el dashboard
+        st.info("""
+        **Para ver el dashboard completo:**
+        
+        1. Abre una nueva terminal
+        2. Ejecuta: `streamlit run app/metrics_dashboard.py --server.port=8502`
+        3. O haz clic en el botón de arriba
+        
+        El dashboard incluye:
+        - 📈 Gráficos interactivos con Plotly
+        - 🎯 Análisis radar de rendimiento
+        - 📊 Evolución temporal de métricas
+        - 📋 Tablas detalladas de resultados
+        - 💡 Recomendaciones automáticas
+        """)
+        
+        # Ejecutar evaluación desde aquí
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🚀 Ejecutar Nueva Evaluación", type="primary"):
+                with st.spinner("Ejecutando evaluación..."):
+                    try:
+                        result = subprocess.run(
+                            [sys.executable, "app/run_eval.py"], 
+                            capture_output=True, text=True, cwd="."
+                        )
+                        if result.returncode == 0:
+                            st.success("✅ Evaluación completada exitosamente!")
+                            st.info("Recarga el dashboard para ver los nuevos resultados.")
+                        else:
+                            st.error(f"❌ Error en evaluación: {result.stderr}")
+                    except Exception as e:
+                        st.error(f"❌ Error ejecutando evaluación: {e}")
+        
+        with col2:
+            if st.button("🔄 Verificar Estado del Sistema"):
+                try:
+                    result = subprocess.run(
+                        [sys.executable, "health_check.py"], 
+                        capture_output=True, text=True, cwd="."
+                    )
+                    if result.returncode == 0:
+                        st.success("✅ Sistema funcionando correctamente")
+                    else:
+                        st.warning("⚠️ Algunos componentes pueden tener problemas")
+                    
+                    if result.stdout:
+                        st.text(result.stdout)
+                except Exception as e:
+                    st.error(f"❌ Error verificando sistema: {e}")
+        
+    except Exception as e:
+        st.error(f"Error cargando dashboard: {e}")
+
+else:  # Analytics Básicos
     st.header("📈 Dashboard de Evaluación del Sistema")
     
     try:
