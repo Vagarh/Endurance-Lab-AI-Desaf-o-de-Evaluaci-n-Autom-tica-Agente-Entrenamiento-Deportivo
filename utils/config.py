@@ -1,5 +1,6 @@
 """
 Configuración centralizada para Endurance Lab AI
+Actualizada para la nueva estructura de carpetas
 """
 import os
 from pathlib import Path
@@ -8,12 +9,17 @@ from dotenv import load_dotenv
 # Cargar variables de entorno
 load_dotenv()
 
-# Directorios del proyecto
-PROJECT_ROOT = Path(__file__).parent
+# Directorios del proyecto (nueva estructura)
+PROJECT_ROOT = Path(__file__).parent.parent
+APP_DIR = PROJECT_ROOT / "app"
 DATA_DIR = PROJECT_ROOT / "data" / "pdfs"
-PROMPT_DIR = PROJECT_ROOT / "app" / "prompts"
+PROMPT_DIR = APP_DIR / "prompts"
 VECTOR_DIR = PROJECT_ROOT / "vectorstore"
 TESTS_DIR = PROJECT_ROOT / "tests"
+SCRIPTS_DIR = PROJECT_ROOT / "scripts"
+UTILS_DIR = PROJECT_ROOT / "utils"
+ASSETS_DIR = PROJECT_ROOT / "assets"
+DOCS_DIR = PROJECT_ROOT / "docs"
 
 # Configuración de OpenAI
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -36,13 +42,13 @@ STREAMLIT_PORT = int(os.getenv("STREAMLIT_PORT", "8501"))
 
 # Información del proyecto
 PROJECT_NAME = "Endurance Lab AI"
-PROJECT_VERSION = "1.0.0"
+PROJECT_VERSION = "2.0.0"  # Actualizada por la reorganización
 PROJECT_DESCRIPTION = "Asistente virtual especializado en entrenamiento de resistencia"
 
-# URLs y recursos
+# URLs y recursos (nueva estructura)
 REPO_URL = "https://github.com/Vagarh/Endurance-Lab-AI-Desaf-o-de-Evaluaci-n-Autom-tica-Agente-Entrenamiento-Deportivo"
-LOGO_PATH = PROJECT_ROOT / "Imagenes" / "ChatGPT Image 2 may 2025, 17_42_01.png"
-HERO_PATH = PROJECT_ROOT / "Imagenes" / "ChatGPT Image 2 may 2025, 17_45_41.png"
+LOGO_PATH = ASSETS_DIR / "images" / "ChatGPT Image 2 may 2025, 17_42_01.png"
+HERO_PATH = ASSETS_DIR / "images" / "ChatGPT Image 2 may 2025, 17_45_41.png"
 
 # Disciplinas deportivas soportadas
 SUPPORTED_SPORTS = [
@@ -68,6 +74,9 @@ def validate_config():
     
     if not PROMPT_DIR.exists():
         issues.append(f"Directorio de prompts no existe: {PROMPT_DIR}")
+    
+    if not APP_DIR.exists():
+        issues.append(f"Directorio de aplicación no existe: {APP_DIR}")
     
     # Verificar que existe al menos un PDF
     pdf_files = list(DATA_DIR.glob("*.pdf")) if DATA_DIR.exists() else []
@@ -95,8 +104,32 @@ def get_config_summary():
             "chunk_overlap": CHUNK_OVERLAP
         },
         "paths": {
+            "app_dir": str(APP_DIR),
             "data_dir": str(DATA_DIR),
             "vector_dir": str(VECTOR_DIR),
-            "prompt_dir": str(PROMPT_DIR)
+            "prompt_dir": str(PROMPT_DIR),
+            "assets_dir": str(ASSETS_DIR),
+            "docs_dir": str(DOCS_DIR)
+        },
+        "structure": {
+            "organized": True,
+            "version": "2.0.0"
+        }
+    }
+
+def get_project_structure():
+    """Retorna la estructura del proyecto"""
+    return {
+        "root": PROJECT_ROOT,
+        "directories": {
+            "app": "Aplicación principal y módulos",
+            "data": "Datos de entrenamiento (PDFs)",
+            "tests": "Tests y datasets de evaluación", 
+            "scripts": "Scripts de utilidad y automatización",
+            "utils": "Utilidades y configuración",
+            "assets": "Recursos estáticos (imágenes, docs)",
+            "docs": "Documentación del proyecto",
+            "vectorstore": "Base de datos vectorial",
+            "mlruns": "Experimentos de MLflow"
         }
     }

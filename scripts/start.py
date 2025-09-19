@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 """
 Script de inicio rápido para Endurance Lab AI
+Actualizado para estructura organizada v2.0.0
 """
 import os
 import sys
 import subprocess
 from pathlib import Path
+
+# Configurar paths para nueva estructura
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.extend([
+    str(PROJECT_ROOT),
+    str(PROJECT_ROOT / "utils"),
+    str(PROJECT_ROOT / "app")
+])
 
 def check_requirements():
     """Verifica que las dependencias estén instaladas"""
@@ -39,6 +48,8 @@ def create_vectorstore():
     """Crea el vectorstore"""
     print("🔄 Creando vectorstore...")
     try:
+        # Cambiar al directorio raíz para importaciones
+        os.chdir(PROJECT_ROOT)
         from app.rag_pipeline import save_vectorstore
         save_vectorstore()
         print("✅ Vectorstore creado")
@@ -51,8 +62,11 @@ def start_streamlit():
     """Inicia la aplicación Streamlit"""
     print("🚀 Iniciando Endurance Lab AI...")
     
+    # Cambiar al directorio raíz
+    os.chdir(PROJECT_ROOT)
+    
     # Usar la versión mejorada si existe, sino la original
-    if Path("app/main_interface_improved.py").exists():
+    if (PROJECT_ROOT / "app/main_interface_improved.py").exists():
         app_file = "app/main_interface_improved.py"
     else:
         app_file = "app/main_interface.py"
