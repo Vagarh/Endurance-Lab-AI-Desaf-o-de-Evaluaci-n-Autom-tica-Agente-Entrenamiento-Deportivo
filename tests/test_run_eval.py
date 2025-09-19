@@ -42,6 +42,12 @@ def test_prompts_exist():
 @patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"})
 def test_rag_pipeline_imports():
     """Verifica que los módulos se pueden importar correctamente"""
+    import sys
+    import os
+    
+    # Añadir el directorio raíz al path
+    sys.path.insert(0, os.path.abspath('.'))
+    
     try:
         from app.rag_pipeline import load_vectorstore_from_disk, build_chain
         assert callable(load_vectorstore_from_disk), "load_vectorstore_from_disk debe ser callable"
